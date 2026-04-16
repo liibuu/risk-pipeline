@@ -1,0 +1,1 @@
+![Business Architecture](docs/business_architecture.png)
