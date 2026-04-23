@@ -12,6 +12,22 @@ including the dirty patterns that are common in banking source systems.
 
 ---
 
+## Flow
+
+```
+MS SQL Server (source tables)
+  ↓ 01_explode.sql  - set-based explosion, export SELECT results as CSV
+exploded/           ← row-level, clean
+  ↓ 02_inject_dirty.py
+landing/            ← row-level, dirty  ← upload this to ADLS landing zone
+```
+
+After uploading `landing/` to ADLS, the pipeline (dbt) takes over.
+
+![Flow](../../docs/data_prep.png)
+
+---
+
 ## Scripts
 
 ### `01_explode.sql` - Aggregate → Row-level (run inside MS SQL Server)
@@ -61,18 +77,6 @@ python 02_inject_dirty.py --input_dir ./exploded --output_dir ./landing
 | Data_MyVIB_Transaction | ~3% non-positive TRANS_AMOUNT, ~1% mismatched TRANS_LV1/LV2, ~0.5% null TRANS_HOUR |
 
 ---
-
-## Flow
-
-```
-MS SQL Server (source tables)
-  ↓ 01_explode.sql  - set-based explosion, export SELECT results as CSV
-exploded/           ← row-level, clean
-  ↓ 02_inject_dirty.py
-landing/            ← row-level, dirty  ← upload this to ADLS landing zone
-```
-
-After uploading `landing/` to ADLS, the pipeline (dbt) takes over.
 
 ## Why SQL for explosion but Python for dirty injection?
 
