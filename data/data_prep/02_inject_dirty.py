@@ -6,15 +6,15 @@ injects realistic dirty data patterns that simulate what a bank's raw
 upstream data actually looks like.
 
 Usage:
-    python 02_inject_dirty.py --input_dir ./exploded --output_dir ./landing
+    py 02_inject_dirty.py --input_dir ./exploded --output_dir ./landing
 
 Dirty patterns injected per table:
     customer    — duplicates, mixed sex formats, inconsistent DOB formats,
-                  nulls on IB_REGISTER_DATE
+                  nulls on IB_REGISTER_DATE, add LEGAL_ID (~0.7% null)
     deposit     — impossible zero balance when count > 0, negative balances
     card        — inject BLOCKED (~0.5%)/EXPIRED (~2%) status orphan cards 
                   (no matching customer), mixed STATUS casing
-    lending     — inject LOAN_TYPE, null LOAN_AMOUNT (~1%), future (~0.5%)
+    lending     — add LOAN_TYPE, null LOAN_AMOUNT (~1%), future (~0.5%)
                   DISBURSEMENT_DATE, negative LOAN_AMOUNT (~0.5%)
     activity    — null ACTIVITY_NAME (~2%), late-arriving records (date 
                   shifted back)
@@ -87,6 +87,14 @@ def dirty_customer(df: pd.DataFrame) -> pd.DataFrame:
     null_mask = random_mask(n2, 0.01)
     df.loc[null_mask, "IB_REGISTER_DATE"] = np.nan
     print(f"    + mixed sex formats, inconsistent DOB formats, {null_mask.sum()} null IB_REGISTER_DATE")
+
+    # 5. Add LEGAL_ID (12-digit numeric string with leading zeros), ~0.7% null
+    df["LEGAL_ID"] = pd.Series(
+        RNG.integers(0, 999999999999, size=len(df))
+    ).apply(lambda x: str(x).zfill(12))
+    null_mask = random_mask(len(df), 0.007)
+    df.loc[null_mask, "LEGAL_ID"] = np.nan
+    print(f"    + {null_mask.sum()} null LEGAL_ID")
 
     return df
 
