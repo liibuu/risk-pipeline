@@ -1,0 +1,7 @@
+- The system should be intuitive for business users, not just developers.
+- Data from various sources must be presented with consistent labels and definitions.
+- The system should adapt to needs and changes.
+- It must safeguard sensitive information.
+- The data warehouse team and business users should agree on delivery timelines, mainly when time limits restrict data cleaning or validation.
+- It must have the right data to support decision-making.
+- The business users must accept the DW/BI system; you thought you built an excellent data warehousing system, but nobody used it; your solutions were not that great.
