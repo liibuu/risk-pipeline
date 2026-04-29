@@ -1,0 +1,249 @@
+version: 2
+
+models:
+
+  # -- HUBS ------------------------------------------------------
+
+  - name: hub_customer
+    description: "One row per unique customer (customer_number)"
+    columns:
+      - name: customer_hk
+        tests: [not_null, unique]
+      - name: customer_number
+        tests: [not_null]
+      - name: record_source
+        tests: [not_null]
+
+  - name: hub_account
+    description: "One row per unique deposit account (account_id)"
+    columns:
+      - name: account_hk
+        tests: [not_null, unique]
+      - name: account_id
+        tests: [not_null]
+
+  - name: hub_card
+    description: "One row per unique card (card_id)"
+    columns:
+      - name: card_hk
+        tests: [not_null, unique]
+      - name: card_id
+        tests: [not_null]
+
+  - name: hub_loan
+    description: "One row per unique loan (loan_id)"
+    columns:
+      - name: loan_hk
+        tests: [not_null, unique]
+      - name: loan_id
+        tests: [not_null]
+
+  - name: hub_transaction
+    description: "One row per unique transaction (txn_id)"
+    columns:
+      - name: transaction_hk
+        tests: [not_null, unique]
+      - name: txn_id
+        tests: [not_null]
+
+  - name: hub_activity
+    description: "One row per unique activity event (event_id)"
+    columns:
+      - name: activity_hk
+        tests: [not_null, unique]
+      - name: event_id
+        tests: [not_null]
+
+  # -- LINKS -----------------------------------------------------
+
+  - name: lnk_customer_account
+    columns:
+      - name: lnk_customer_account_hk
+        tests: [not_null, unique]
+      - name: customer_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: customer_hk
+      - name: account_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_account')
+              field: account_hk
+
+  - name: lnk_customer_card
+    columns:
+      - name: lnk_customer_card_hk
+        tests: [not_null, unique]
+      - name: customer_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: customer_hk
+      - name: card_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_card')
+              field: card_hk
+
+  - name: lnk_customer_loan
+    columns:
+      - name: lnk_customer_loan_hk
+        tests: [not_null, unique]
+      - name: customer_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: customer_hk
+      - name: loan_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_loan')
+              field: loan_hk
+
+  - name: lnk_customer_transaction
+    columns:
+      - name: lnk_customer_transaction_hk
+        tests: [not_null, unique]
+      - name: customer_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: customer_hk
+      - name: transaction_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_transaction')
+              field: transaction_hk
+
+  - name: lnk_customer_activity
+    columns:
+      - name: lnk_customer_activity_hk
+        tests: [not_null, unique]
+      - name: customer_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: customer_hk
+      - name: activity_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_activity')
+              field: activity_hk
+
+  # -- SATELLITES ------------------------------------------------
+
+  - name: sat_customer_details
+    description: "Customer profile attributes with full history"
+    columns:
+      - name: customer_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_customer')
+              field: customer_hk
+      - name: hash_diff
+        tests: [not_null]
+      - name: client_sex
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['M', 'F', 'U']
+
+  - name: sat_account_details
+    description: "Deposit account attributes per snapshot month"
+    columns:
+      - name: account_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_account')
+              field: account_hk
+      - name: hash_diff
+        tests: [not_null]
+      - name: account_type
+        tests:
+          - accepted_values:
+              values: ['CURRENT', 'TERM_DEPOSIT']
+
+  - name: sat_card_details
+    description: "Card attributes - status normalised to upper case"
+    columns:
+      - name: card_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_card')
+              field: card_hk
+      - name: hash_diff
+        tests: [not_null]
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['ACTIVE', 'EXPIRED', 'BLOCKED']
+
+  - name: sat_loan_details
+    description: "Loan attributes - negative amounts and future dates cleaned"
+    columns:
+      - name: loan_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_loan')
+              field: loan_hk
+      - name: hash_diff
+        tests: [not_null]
+      - name: loan_type
+        tests:
+          - accepted_values:
+              values: ['MORTGAGE', 'BUSINESS', 'PERSONAL', 'AUTO']
+      - name: loan_amount_flag
+        tests:
+          - accepted_values:
+              values: ['VALID', 'NULL_SOURCE', 'NEGATIVE']
+
+  - name: sat_transaction_details
+    description: "Transaction attributes - non-positive amounts nullified, LV mismatch flagged"
+    columns:
+      - name: transaction_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_transaction')
+              field: transaction_hk
+      - name: hash_diff
+        tests: [not_null]
+      - name: is_amount_suspect
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      - name: is_lv_mismatch
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+  - name: sat_activity_details
+    description: "Activity event attributes - null activity_name flagged"
+    columns:
+      - name: activity_hk
+        tests:
+          - not_null
+          - relationships:
+              to: ref('hub_activity')
+              field: activity_hk
+      - name: hash_diff
+        tests: [not_null]
+      - name: is_activity_name_null
+        tests:
+          - accepted_values:
+              values: [0, 1]
