@@ -137,7 +137,18 @@ foreach ($dir in @("landing", "raw", "curated", "mart")) { `
     --name "$dir/.keep" `
     --file "NUL" `
     --overwrite
-}    
+}
+
+# Create sub-folders in raw/
+foreach ($dir in @("onlinebanking", "cic", "customerprofile")) { `
+  az storage blob upload `
+    --account-name striskpipelinegwc612 `
+    --account-key $ACCOUNT_KEY `
+    --container-name risk-data `
+    --name "raw/$dir/.keep" `
+    --file "NUL" `
+    --overwrite
+}
 ```
 
 #### ADLS Gen2 (Storage Account)

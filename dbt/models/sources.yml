@@ -1,0 +1,91 @@
+version: 2
+
+sources:
+
+  - name: customerprofile
+    description: "Customer master and deposit account data from on-prem SQL"
+    database: "{{ env_var('SYNAPSE_DATABASE') }}"
+    schema: raw_ext
+    tables:
+      - name: base_customer
+        description: "Customer master - one row per customer"
+        columns:
+          - name: CUSTOMER_NUMBER
+            tests: [not_null]
+          - name: CLIENT_SEX
+          - name: CLIENT_CREATE_DATE
+          - name: DATE_OF_BIRTH
+          - name: STAFF_VIB
+          - name: IB_REGISTER_DATE
+          - name: EB_REGISTER_CHANNEL
+          - name: SMS
+          - name: VERIFY_METHOD
+          - name: LEGAL_ID
+
+      - name: base_deposit
+        description: "Deposit accounts - CA and TD per customer per month"
+        columns:
+          - name: ACCOUNT_ID
+            tests: [not_null]
+          - name: CUSTOMER_NUMBER
+            tests: [not_null]
+          - name: MONTH
+          - name: ACCOUNT_TYPE
+          - name: BALANCE
+          - name: OPEN_DATE
+          - name: CLOSE_DATE
+
+  - name: onlinebanking
+    description: "Online banking activity and transaction events"
+    database: "{{ env_var('SYNAPSE_DATABASE') }}"
+    schema: raw_ext
+    tables:
+      - name: base_activity
+        description: "App activity events — one row per event"
+        columns:
+          - name: EVENT_ID
+            tests: [not_null]
+          - name: CUSTOMER_NUMBER
+            tests: [not_null]
+          - name: ACTIVITY_NAME
+          - name: ACTIVITY_TIMESTAMP
+
+      - name: base_transaction
+        description: "Financial transactions — one row per transaction"
+        columns:
+          - name: TXN_ID
+            tests: [not_null, unique]
+          - name: CUSTOMER_NUMBER
+            tests: [not_null]
+          - name: TRANS_LV1
+          - name: TRANS_LV2
+          - name: TRANS_AMOUNT
+          - name: TRANS_TIMESTAMP
+
+  - name: cic
+    description: "Credit bureau data — cards and loans"
+    database: "{{ env_var('SYNAPSE_DATABASE') }}"
+    schema: raw_ext
+    tables:
+      - name: base_card
+        description: "Credit and debit card records"
+        columns:
+          - name: CARD_ID
+            tests: [not_null]
+          - name: CUSTOMER_NUMBER
+            tests: [not_null]
+          - name: CARD_TYPE
+          - name: ISSUE_DATE
+          - name: STATUS
+
+      - name: base_lending
+        description: "Loan records"
+        columns:
+          - name: LOAN_ID
+            tests: [not_null]
+          - name: CUSTOMER_NUMBER
+            tests: [not_null]
+          - name: LOAN_AMOUNT
+          - name: DISBURSEMENT_DATE
+          - name: PAYOFF_DATE
+          - name: LOAN_TYPE
