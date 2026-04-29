@@ -1,6 +1,10 @@
 ref/
+dbt-env/
 data/cic_gen/output/
 *.csv
 *.bak
 *.parquet
 .env
+dbt/.env
+dbt/target/
+logs/

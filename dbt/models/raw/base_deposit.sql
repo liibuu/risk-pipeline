@@ -5,7 +5,7 @@
 
 with source as (
 
-    select * from {{ source('customer_profile', 'base_deposit') }}
+    select * from {{ source('customerprofile', 'base_deposit') }}
 
 ),
 
@@ -21,7 +21,7 @@ base as (
         try_cast(CLOSE_DATE  as date)               as close_date,          -- nullable: open accounts have no close date
 
         -- Data Vault metadata
-        'CUSTOMER_PROFILE'                          as record_source,
+        'customerprofile'                          as record_source,
         cast(getdate() as datetime2)                as load_ts
 
     from source

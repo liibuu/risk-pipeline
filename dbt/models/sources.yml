@@ -4,7 +4,6 @@ sources:
 
   - name: customerprofile
     description: "Customer master and deposit account data from on-prem SQL"
-    database: "{{ env_var('SYNAPSE_DATABASE') }}"
     schema: raw_ext
     tables:
       - name: base_customer
@@ -37,11 +36,10 @@ sources:
 
   - name: onlinebanking
     description: "Online banking activity and transaction events"
-    database: "{{ env_var('SYNAPSE_DATABASE') }}"
     schema: raw_ext
     tables:
       - name: base_activity
-        description: "App activity events — one row per event"
+        description: "App activity events - one row per event"
         columns:
           - name: EVENT_ID
             tests: [not_null]
@@ -51,7 +49,7 @@ sources:
           - name: ACTIVITY_TIMESTAMP
 
       - name: base_transaction
-        description: "Financial transactions — one row per transaction"
+        description: "Financial transactions - one row per transaction"
         columns:
           - name: TXN_ID
             tests: [not_null, unique]
@@ -63,8 +61,7 @@ sources:
           - name: TRANS_TIMESTAMP
 
   - name: cic
-    description: "Credit bureau data — cards and loans"
-    database: "{{ env_var('SYNAPSE_DATABASE') }}"
+    description: "Credit bureau data - cards and loans"
     schema: raw_ext
     tables:
       - name: base_card

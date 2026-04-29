@@ -8,7 +8,7 @@
 
 with source as (
 
-    select * from {{ source('customer_profile', 'base_customer') }}
+    select * from {{ source('customerprofile', 'base_customer') }}
 
 ),
 
@@ -27,7 +27,7 @@ base as (
         cast(STAFF_VIB           as varchar(10))    as staff_vib,
 
         -- Data Vault metadata
-        'CUSTOMER_PROFILE'                          as record_source,
+        'customerprofile'                          as record_source,
         cast(getdate() as datetime2)                as load_ts
 
     from source
