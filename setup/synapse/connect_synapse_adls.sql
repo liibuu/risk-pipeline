@@ -11,7 +11,7 @@ WITH IDENTITY = 'Managed Identity';
 -- 3. Create external data source pointing at your ADLS container
 CREATE EXTERNAL DATA SOURCE risk_data_source
 WITH (
-    LOCATION = 'https://striskpipelinegwc612.blob.core.windows.net/risk-data',
+    LOCATION = 'https://striskpipelinegwc612.blob.core.windows.net/risk-data', --container
     CREDENTIAL = managed_identity_cred
 );
 
@@ -22,8 +22,3 @@ WITH (
     DATA_COMPRESSION = 'org.apache.hadoop.io.compress.SnappyCodec'
 );
 
--- 5. Create schemas for each layer
-CREATE SCHEMA raw_ext; GO
-CREATE SCHEMA raw; GO
-CREATE SCHEMA curated; GO
-CREATE SCHEMA mart; GO

@@ -98,68 +98,10 @@ az storage blob upload --account-name striskpipelinegwc612 --account-key $ACCOUN
 az storage blob upload --account-name striskpipelinegwc612 --account-key $ACCOUNT_KEY --container-name risk-data --name "raw/cic/base_card.parquet" --file "./raw/base_card.parquet"
 az storage blob upload --account-name striskpipelinegwc612 --account-key $ACCOUNT_KEY --container-name risk-data --name "raw/cic/base_lending.parquet" --file "./raw/base_lending.parquet"
 
-# Azure Synapse
-# IMPORTANT: first, need to be registered with Microsoft.Sql resource provider
-az synapse workspace create `
-  --name synapse-riskpipeline `
-  --resource-group rg-risk-pipeline `
-  --location germanywestcentral `
-  --storage-account striskpipelinegwc612 `
-  --file-system risk-data `
-  --sql-admin-login-user sqladmin `
-  --sql-admin-login-password "xxx"
 
-az synapse workspace show `
-  --name synapse-riskpipeline `
-  --resource-group rg-risk-pipeline `
-  --query "{name:name, endpoint:connectivityEndpoints.sql}"
-
-$MY_IP=$(Invoke-RestMethod -Uri "https://api.ipify.org")
-
-az synapse workspace firewall-rule create `
-  --workspace-name synapse-riskpipeline `
-  --resource-group rg-risk-pipeline `
-  --name AllowMyIP `
-  --start-ip-address $MY_IP `
-  --end-ip-address $MY_IP
-
-$STORAGE_ID=$(az storage account show `
-  --name striskpipelinegwc612 `
-  --resource-group rg-risk-pipeline `
-  --query "id" -o tsv)
-
-$SYNAPSE_MI=$(az synapse workspace show `
-  --name synapse-riskpipeline `
-  --resource-group rg-risk-pipeline `
-  --query "identity.principalId" -o tsv)
-
-az role assignment create `
-  --assignee $SYNAPSE_MI `
-  --role "Storage Blob Data Reader" `
-  --scope $STORAGE_ID
-
-# Service principle
-az ad sp create-for-rbac `
-  --name "sp-dbt-riskpipeline" `
-  --role "Contributor" `
-  --scopes /subscriptions/42a3acc9-bff1-49e6-8619-75c9555c8c83  
-
-# give write permission
-$STORAGE_ID=$(az storage account show `
-  --name striskpipelinegwc612 `
-  --resource-group rg-risk-pipeline `
-  --query "id" -o tsv) `
-
-$SYNAPSE_MI=$(az synapse workspace show `
-  --name synapse-riskpipeline `
-  --resource-group rg-risk-pipeline `
-  --query "identity.principalId" -o tsv) `
-
-az role assignment create `
-  --assignee $SYNAPSE_MI `
-  --role "Storage Blob Data Contributor" `
-  --scope $STORAGE_ID  `
 ```
+
+For Synapse-specific setup, refer to [Synapse setup](./synapse/)
 
 ## Naming Conventions
 
