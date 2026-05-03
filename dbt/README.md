@@ -76,6 +76,7 @@ ORDER BY TABLE_SCHEMA, TABLE_NAME;
 dbt run --select raw
 dbt run --select curated
 # OR: dbt run --select curated --no-partial-parse --full-refresh
+dbt run --select mart --no-partial-parse --full-refresh
 
 dbt test --select curated 
 ```

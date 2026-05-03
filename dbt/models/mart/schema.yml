@@ -1,0 +1,125 @@
+version: 2
+
+models:
+
+  # ── DIMENSIONS ────────────────────────────────────────────────
+
+  - name: dim_customer
+    description: "SCD Type 2 customer dimension — one row per customer per version"
+    columns:
+      - name: dim_customer_sk
+        tests: [not_null, unique]
+      - name: customer_id
+        tests: [not_null]
+      - name: client_sex
+        tests:
+          - accepted_values:
+              values: ['M', 'F', 'U']
+              config:
+                severity: warn
+      - name: current_flag
+        tests:
+          - not_null
+          - accepted_values:
+              values: [0, 1]
+      - name: valid_from
+        tests: [not_null]
+      - name: valid_to
+        tests: [not_null]
+
+  - name: dim_account
+    description: "Deposit account dimension — one row per account per snapshot month"
+    columns:
+      - name: dim_account_sk
+        tests: [not_null, unique]
+      - name: account_id
+        tests: [not_null]
+      - name: account_type
+        tests:
+          - accepted_values:
+              values: ['CURRENT', 'TERM_DEPOSIT']
+              config:
+                severity: warn
+      - name: current_flag
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+  - name: dim_date
+    description: "Calendar date spine 2015-2030"
+    columns:
+      - name: date_id
+        tests: [not_null, unique]
+      - name: calendar_date
+        tests: [not_null, unique]
+
+  # ── FACTS ─────────────────────────────────────────────────────
+
+  - name: fact_transactions
+    description: "Grain: one row per financial transaction"
+    columns:
+      - name: fact_txn_sk
+        tests: [not_null, unique]
+      - name: txn_id
+        tests: [not_null]
+      - name: trans_amount
+        tests:
+          - not_null:
+              config:
+                severity: warn
+      - name: date_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_id
+              config:
+                severity: warn
+      - name: is_amount_suspect
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      - name: is_lv_mismatch
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+  - name: fact_card_snapshot
+    description: "Grain: one row per card (latest snapshot)"
+    columns:
+      - name: fact_card_sk
+        tests: [not_null, unique]
+      - name: card_id
+        tests: [not_null]
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['ACTIVE', 'EXPIRED', 'BLOCKED']
+      - name: is_active
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      - name: is_blocked
+        tests:
+          - accepted_values:
+              values: [0, 1]
+      - name: is_expired
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+  - name: fact_loan_snapshot
+    description: "Grain: one row per loan (latest snapshot)"
+    columns:
+      - name: fact_loan_sk
+        tests: [not_null, unique]
+      - name: loan_id
+        tests: [not_null]
+      - name: loan_type
+        tests:
+          - accepted_values:
+              values: ['MORTGAGE', 'BUSINESS', 'PERSONAL', 'AUTO']
+      - name: is_outstanding
+        tests:
+          - accepted_values:
+              values: [0, 1]
