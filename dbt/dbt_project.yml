@@ -9,6 +9,10 @@ test-paths: ["tests"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
 
+dispatch:
+  - macro_namespace: dbt
+    search_order: ['risk_pipeline', 'dbt']
+
 models:
   risk_pipeline:
     raw:
@@ -26,3 +30,7 @@ models:
     mart:
       +materialized: incremental
       +schema: mart
+
+tests:
+  risk_pipeline:
+    +schema: dbt_test

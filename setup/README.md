@@ -143,6 +143,22 @@ az ad sp create-for-rbac `
   --name "sp-dbt-riskpipeline" `
   --role "Contributor" `
   --scopes /subscriptions/42a3acc9-bff1-49e6-8619-75c9555c8c83  
+
+# give write permission
+$STORAGE_ID=$(az storage account show `
+  --name striskpipelinegwc612 `
+  --resource-group rg-risk-pipeline `
+  --query "id" -o tsv) `
+
+$SYNAPSE_MI=$(az synapse workspace show `
+  --name synapse-riskpipeline `
+  --resource-group rg-risk-pipeline `
+  --query "identity.principalId" -o tsv) `
+
+az role assignment create `
+  --assignee $SYNAPSE_MI `
+  --role "Storage Blob Data Contributor" `
+  --scope $STORAGE_ID  `
 ```
 
 ## Naming Conventions
