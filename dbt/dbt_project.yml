@@ -15,7 +15,7 @@ models:
       +materialized: view
       +schema: raw
     curated:
-      +materialized: table
+      +materialized: incremental
       +schema: curated
       hubs:
         +materialized: incremental
@@ -24,5 +24,5 @@ models:
       satellites:
         +materialized: incremental
     mart:
-      +materialized: table
+      +materialized: incremental
       +schema: mart

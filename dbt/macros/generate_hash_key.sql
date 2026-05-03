@@ -13,12 +13,16 @@
         hashbytes(
             'MD5',
             upper(
-                concat_ws('||',
-                    {% for col in columns %}
-                        coalesce(cast({{ col }} as varchar(255)), '^^')
-                        {%- if not loop.last %},{% endif %}
-                    {% endfor %}
-                )
+                {% if columns | length == 1 %}
+                    coalesce(cast({{ columns[0] }} as varchar(255)), '^^')
+                {% else %}
+                    concat_ws('||',
+                        {% for col in columns %}
+                            coalesce(cast({{ col }} as varchar(255)), '^^')
+                            {%- if not loop.last %},{% endif %}
+                        {% endfor %}
+                    )
+                {% endif %}
             )
         ),
         2
@@ -41,12 +45,16 @@
         char(32),
         hashbytes(
             'MD5',
-            concat_ws('||',
-                {% for col in columns %}
-                    coalesce(cast({{ col }} as varchar(255)), '^^')
-                    {%- if not loop.last %},{% endif %}
-                {% endfor %}
-            )
+            {% if columns | length == 1 %}
+                coalesce(cast({{ columns[0] }} as varchar(255)), '^^')
+            {% else %}
+                concat_ws('||',
+                    {% for col in columns %}
+                        coalesce(cast({{ col }} as varchar(255)), '^^')
+                        {%- if not loop.last %},{% endif %}
+                    {% endfor %}
+                )
+            {% endif %}
         ),
         2
     )

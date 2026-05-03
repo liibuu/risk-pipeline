@@ -1,0 +1,16 @@
+risk_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: synapse
+      driver: 'ODBC Driver 18 for SQL Server'
+      server: synapse-riskpipeline-ondemand.sql.azuresynapse.net
+      port: 1433
+      database: db_risk_pipeline
+      schema: dbt_dev
+      authentication: ActiveDirectoryServicePrincipal
+      user: xxx@mytum.de
+      tenant_id: xxx
+      client_id: xxx
+      client_secret: xxx
+      

@@ -1,3 +1,5 @@
+![Data Vault illustration](../docs/data_vault.png)
+
 ## dbt structure
 models/
 ├── sources.yml                      ← declares all Synapse external tables
@@ -32,6 +34,13 @@ models/
 │
 └── macros/
     └── generate_hash_key.sql          ← MD5 hash key + hash diff macros
+
+## Run commands
+dbt run --select raw
+dbt run --select curated
+dbt run --select curated --no-partial-parse --full-refresh
+
+dbt test --select curated 
 
 ## High-level goals
 - The system should be intuitive for business users, not just developers.
