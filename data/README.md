@@ -1,5 +1,7 @@
 # Overview
 
+![Data preparation](../docs/data_prep.png)
+
 I only had monthly aggregates, so I reverse-engineered plausible row-level data, intentionally introduced realistic dirty data patterns I've seen in banking, then built a full cleaning and re-aggregation pipeline, and validated the mart output against the original source totals as a reconciliation check.
 
 Script 1 — Explode: Take aggregated CSVs → generate row-level records (the COUNT_OF_LOAN = 2 → 2 rows logic)
