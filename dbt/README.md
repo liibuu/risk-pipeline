@@ -2,6 +2,8 @@
 
 ![Data Vault illustration](../docs/data_vault.png)
 
+![Kimball illustration](../docs/kimball.png)
+
 # dbt structure
 ```
 models/
