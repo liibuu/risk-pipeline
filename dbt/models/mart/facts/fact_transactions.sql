@@ -1,6 +1,4 @@
 /*
-  fact_transactions
-  ──────────────────
   Layer  : mart / Kimball fact
   Grain  : one row per financial transaction
   Source : hub_transaction + sat_transaction_details + lnk_customer_transaction

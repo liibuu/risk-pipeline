@@ -1,6 +1,4 @@
 /*
-  fact_card_snapshot
-  ───────────────────
   Layer  : mart / Kimball fact
   Grain  : one row per card (latest snapshot)
   Source : hub_card + sat_card_details + lnk_customer_card

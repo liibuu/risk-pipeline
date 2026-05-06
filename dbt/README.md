@@ -74,9 +74,10 @@ ORDER BY TABLE_SCHEMA, TABLE_NAME;
 # Run commands
 ```bash
 dbt run --select raw
-dbt run --select curated
+dbt run --select curated 
 # OR: dbt run --select curated --no-partial-parse --full-refresh
 dbt run --select mart --no-partial-parse --full-refresh
+# ADD: dbt run --select fact_activity_monthly --no-partial-parse
 
 dbt test --select curated 
 ```

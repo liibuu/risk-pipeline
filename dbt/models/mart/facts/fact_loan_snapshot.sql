@@ -1,6 +1,4 @@
 /*
-  fact_loan_snapshot
-  ───────────────────
   Layer  : mart / Kimball fact
   Grain  : one row per loan (latest snapshot)
   Source : hub_loan + sat_loan_details + lnk_customer_loan
