@@ -1,4 +1,5 @@
 ref/
+archive/
 data/cic_gen
 dbt-env/
 dbt/target/

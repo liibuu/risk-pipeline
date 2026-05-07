@@ -171,7 +171,7 @@ CARD_ONLINE_PROB = 0.82
 
 
 def process_card(card_df, branch_df):
-    credit_mask = card_df["CARD_TYPE"] == "CREDIT CARD"
+    credit_mask = card_df["CARD_TYPE"] == "CREDIT"
     credit_df = card_df[credit_mask].copy()
     non_credit_df = card_df[~credit_mask].copy()
 
