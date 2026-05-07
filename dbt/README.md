@@ -80,6 +80,7 @@ dbt run --select curated
 # OR: dbt run --select curated --no-partial-parse --full-refresh
 dbt run --select mart --no-partial-parse --full-refresh
 # ADD: dbt run --select fact_activity_monthly --no-partial-parse
+# ADD: dbt run --select fact_account_snapshot --no-partial-parse
 
 dbt test --select curated 
 ```
