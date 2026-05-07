@@ -1,5 +1,5 @@
 ref/
-data/cic_gen/output/
+data/cic_gen
 dbt-env/
 dbt/target/
 logs/
