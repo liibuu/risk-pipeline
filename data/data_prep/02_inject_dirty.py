@@ -6,7 +6,7 @@ injects realistic dirty data patterns that simulate what a bank's raw
 upstream data actually looks like.
 
 Usage:
-    py 02_inject_dirty.py --input_dir ./exploded --output_dir ./landing
+    py 02_inject_dirty.py --input_dir ./exploded --output_dir ./dirtied
 
 Dirty patterns injected per table:
     customer    — duplicates, mixed sex formats, inconsistent DOB formats,
@@ -14,8 +14,8 @@ Dirty patterns injected per table:
     deposit     — impossible zero balance when count > 0, negative balances
     card        — inject BLOCKED (~0.5%)/EXPIRED (~2%) status orphan cards 
                   (no matching customer), mixed STATUS casing
-    lending     — add LOAN_TYPE, null LOAN_AMOUNT (~1%), future (~0.5%)
-                  DISBURSEMENT_DATE, negative LOAN_AMOUNT (~0.5%)
+    lending     — null LOAN_AMOUNT (~1%), future (~0.5%), DISBURSEMENT_DATE, 
+                  negative LOAN_AMOUNT (~0.5%)
     activity    — null ACTIVITY_NAME (~2%), late-arriving records (date 
                   shifted back)
     transaction — non-positive TRANS_AMOUNT (~3%), mismatched TRANS_LV1/LV2
@@ -141,6 +141,7 @@ def dirty_card(df: pd.DataFrame) -> pd.DataFrame:
 
     # 3. ~0.5% orphan cards — set CUSTOMER_NUMBER to a non-existent value
     orphan_mask = random_mask(n, 0.005)
+    df["CUSTOMER_NUMBER"] = df["CUSTOMER_NUMBER"].astype(object)
     df.loc[orphan_mask, "CUSTOMER_NUMBER"] = "CUST_ORPHAN_" + \
         pd.Series(RNG.integers(90000, 99999, orphan_mask.sum()).astype(str)).values
     print(f"    + mixed STATUS casing, {orphan_mask.sum()} orphan card records")
@@ -152,26 +153,18 @@ def dirty_lending(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()
     n = len(df)
 
-    # 1. Inject LOAN_TYPE based on realistic distribution
-    loan_types = RNG.choice(
-        ["PERSONAL", "MORTGAGE", "AUTO", "BUSINESS"],
-        size=n,
-        p=[0.15, 0.55, 0.10, 0.20]
-    )
-    df["LOAN_TYPE"] = loan_types
-
-    # 2. ~1% null LOAN_AMOUNT
+    # 1. ~1% null LOAN_AMOUNT
     null_mask = random_mask(n, 0.01)
     df.loc[null_mask, "LOAN_AMOUNT"] = np.nan
     print(f"    + {null_mask.sum()} null LOAN_AMOUNT")
 
-    # 3. ~0.5% future DISBURSEMENT_DATE (impossible)
+    # 2. ~0.5% future DISBURSEMENT_DATE (impossible)
     future_mask = random_mask(n, 0.005)
     future_dates = future_date(future_mask.sum())
     df.loc[future_mask, "DISBURSEMENT_DATE"] = future_dates
     print(f"    + {future_mask.sum()} future DISBURSEMENT_DATE records")
 
-    # 4. ~0.5% negative LOAN_AMOUNT (sign error)
+    # 3. ~0.5% negative LOAN_AMOUNT (sign error)
     neg_mask = random_mask(n, 0.005)
     df.loc[neg_mask & df["LOAN_AMOUNT"].notna(), "LOAN_AMOUNT"] = \
         df.loc[neg_mask & df["LOAN_AMOUNT"].notna(), "LOAN_AMOUNT"] * -1
@@ -261,12 +254,12 @@ def main(input_dir: str, output_dir: str):
         dirtied.to_csv(output_path, index=False)
         print(f"  → {len(dirtied):,} rows saved to {output_path}")
 
-    print("\n✓ Dirty injection complete. Upload the landing/ directory to ADLS.")
+    print("\n✓ Dirty injection complete.")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Inject dirty data patterns into exploded banking CSVs.")
     parser.add_argument("--input_dir", default="./exploded", help="Directory with exploded CSVs (output of 01_explode.py)")
-    parser.add_argument("--output_dir", default="./landing", help="Directory to write dirty CSVs (upload these to ADLS landing zone)")
+    parser.add_argument("--output_dir", default="./dirtied", help="Directory with dirtied CSVs")
     args = parser.parse_args()
     main(args.input_dir, args.output_dir)
