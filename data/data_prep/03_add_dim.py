@@ -5,7 +5,7 @@ Usage:
     py 03_add_dim.py
 
 Adds dimensional columns to dirtied datasets:
-  - Data_MyVIB_Transaction: currency, FIN_INST_ID/FIN_INST_NAME
+  - Data_MyVIB_Transaction: CURRENCY, FIN_INST_ID/FIN_INST_NAME
   - Data_lending:           LOAN_TYPE, BRANCH_CODE/BRANCH_NAME
   - Data_card:              CARD_SUBTYPE, BRANCH_CODE/BRANCH_NAME
 """
@@ -70,7 +70,7 @@ def process_transaction(txn_df, bank_df):
     n = len(txn_df)
 
     # 1a. Currency column - default VND
-    txn_df["currency"] = "VND"
+    txn_df["CURRENCY"] = "VND"
 
     # Mark 15% of rows as foreign-currency
     fx_mask = rng.random(n) < 0.15
@@ -80,12 +80,12 @@ def process_transaction(txn_df, bank_df):
         size=fx_mask.sum(),
         rng=rng,
     )
-    txn_df.loc[fx_mask, "currency"] = fx_currencies
+    txn_df.loc[fx_mask, "CURRENCY"] = fx_currencies
 
     # Convert AMOUNT: original VND amount ÷ FX rate → foreign-currency amount
     # (assumes AMOUNT column holds VND values pre-dirty)
     for ccy, rate in FX_RATES.items():
-        ccy_mask = txn_df["currency"] == ccy
+        ccy_mask = txn_df["CURRENCY"] == ccy
         txn_df.loc[ccy_mask, "TRANS_AMOUNT"] = (
             txn_df.loc[ccy_mask, "TRANS_AMOUNT"] / rate
         ).round(2)
@@ -106,8 +106,8 @@ def process_transaction(txn_df, bank_df):
     txn_df.loc[outside_mask, "FIN_INST_NAME"] = [bank_names[i] for i in sampled_idx]
 
     # Non-Outside_VIB rows get null
-    txn_df["FIN_INST_ID"]   = txn_df.get("FIN_INST_ID",   pd.Series(dtype="object"))
-    txn_df["FIN_INST_NAME"] = txn_df.get("FIN_INST_NAME", pd.Series(dtype="object"))
+    txn_df["FIN_INST_ID"]   = txn_df["FIN_INST_ID"].where(txn_df["FIN_INST_ID"].notna(), None)
+    txn_df["FIN_INST_NAME"] = txn_df["FIN_INST_NAME"].where(txn_df["FIN_INST_NAME"].notna(), None)
 
     print(f"  FX rows: {fx_mask.sum():,} ({fx_mask.mean()*100:.1f}%)")
     print(f"  Outside_VIB rows: {n_outside:,}")

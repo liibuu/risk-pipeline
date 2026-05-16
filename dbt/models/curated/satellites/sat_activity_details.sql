@@ -45,6 +45,12 @@ cleaned as (
             else 0
         end                     as is_timestamp_null,
 
+        case
+            when activity_timestamp is null then 0 -- originally missing
+            when try_cast(activity_timestamp as datetime2) is null then 1 -- present but malformed
+            else 0
+        end as is_timestamp_unparseable,
+
         record_source,
         load_ts
 
@@ -66,6 +72,7 @@ with_dv_keys as (
         is_activity_name_null,
         activity_timestamp,
         is_timestamp_null,
+        is_timestamp_unparseable,
         record_source,
         load_ts
 
