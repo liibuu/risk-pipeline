@@ -11,7 +11,7 @@ macro-paths: ["macros"]
 
 dispatch:
   - macro_namespace: dbt
-    search_order: ['risk_pipeline', 'dbt']
+    search_order: ['risk_pipeline', 'dbt_synapse', 'dbt']
 
 models:
   risk_pipeline:

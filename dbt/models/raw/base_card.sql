@@ -22,7 +22,7 @@ base as (
         cast(BRANCH_NAME     as varchar(200))       as branch_name,         -- null for debit cards
 
         -- Data Vault metadata
-        'CIC'                                       as record_source,
+        'PRODUCTS'                                       as record_source,
         cast(getdate() as datetime2)                as load_ts
 
     from source

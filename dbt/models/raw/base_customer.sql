@@ -27,7 +27,7 @@ base as (
         cast(STAFF_VIB           as varchar(10))    as staff_vib,
 
         -- Data Vault metadata
-        'customerprofile'                          as record_source,
+        'CUSTOMERPROFILE'                          as record_source,
         cast(getdate() as datetime2)                as load_ts
 
     from source

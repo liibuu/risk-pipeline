@@ -21,7 +21,7 @@ base as (
         try_cast(CLOSE_DATE  as date)               as close_date,          -- nullable: open accounts have no close date
 
         -- Data Vault metadata
-        'customerprofile'                          as record_source,
+        'PRODUCTS'                          as record_source,
         cast(getdate() as datetime2)                as load_ts
 
     from source

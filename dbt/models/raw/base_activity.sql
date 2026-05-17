@@ -2,7 +2,7 @@
   Source : onlinebanking / base_activity.parquet
   Layer  : raw (view)
 
-  Note: ACTIVITY_TIMESTAMP kept as varchar — format needs inspection
+  Note: ACTIVITY_TIMESTAMP kept as varchar - format needs inspection
   before committing to a datetime cast. Cleaned in satellite.
 */
 
