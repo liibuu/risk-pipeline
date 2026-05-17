@@ -3,7 +3,10 @@
   "typeProperties": {
     "location": {
       "type": "AzureBlobFSLocation",
-      "folderPath": "landing/customerprofile",
+      "folderPath": {
+        "value": "@concat('landing/', dataset().tableName)",
+        "type": "Expression"
+      },
       "fileSystem": "risk-data"
     },
     "columnDelimiter": ",",
@@ -11,8 +14,11 @@
     "firstRowAsHeader": true,
     "quoteChar": "\""
   },
+  "parameters": {
+    "tableName": { "type": "string" }
+  },
   "linkedServiceName": {
-    "referenceName": "ls_adls_riskpipeline",
+    "referenceName": "ls_adls_landing",
     "type": "LinkedServiceReference"
   }
 }

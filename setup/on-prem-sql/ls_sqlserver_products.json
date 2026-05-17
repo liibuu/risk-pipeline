@@ -1,0 +1,10 @@
+﻿{
+  "type": "SqlServer",
+  "typeProperties": {
+    "connectionString": "integrated security=False;data source=localhost;initial catalog=products;user id=adf_login;password=<password>"
+  },
+  "connectVia": {
+    "referenceName": "ir-selfhosted-riskpipeline",
+    "type": "IntegrationRuntimeReference"
+  }
+}

@@ -6,7 +6,7 @@
     "table": "INFORMATION_SCHEMA.TABLES"
   },
   "linkedServiceName": {
-    "referenceName": "ls_sqlserver_customerprofile",
+    "referenceName": "ls_sqlserver_products",
     "type": "LinkedServiceReference"
   }
 }

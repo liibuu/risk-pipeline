@@ -1,72 +1,292 @@
 ﻿{
+  "variables": {
+    "tableList": { "type": "Array", "defaultValue": [] }
+  },
   "activities": [
     {
-      "name": "GetTableList",
+      "name": "Lookupcustomerprofile",
       "type": "Lookup",
       "typeProperties": {
         "source": {
           "type": "SqlServerSource",
-          "sqlReaderQuery": "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'"
+          "sqlReaderQuery": "SELECT TABLE_NAME, 'customerprofile' AS databaseName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'"
         },
         "dataset": {
-          "referenceName": "ds_sqlserver_all",
-          "type": "DatasetReference",
-          "parameters": { "tableName": "INFORMATION_SCHEMA.TABLES" }
+          "referenceName": "ds_sqlserver_customerprofile",
+          "type": "DatasetReference"
         },
         "firstRowOnly": false
       }
     },
     {
-      "name": "ForEachTable",
-      "type": "ForEach",
-      "dependsOn": [{ "activity": "GetTableList", "dependencyConditions": ["Succeeded"] }],
+      "name": "Lookuponlinebanking",
+      "type": "Lookup",
       "typeProperties": {
-        "isSequential": false,
+        "source": {
+          "type": "SqlServerSource",
+          "sqlReaderQuery": "SELECT TABLE_NAME, 'onlinebanking' AS databaseName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'"
+        },
+        "dataset": {
+          "referenceName": "ds_sqlserver_onlinebanking",
+          "type": "DatasetReference"
+        },
+        "firstRowOnly": false
+      }
+    },
+    {
+      "name": "Lookupproducts",
+      "type": "Lookup",
+      "typeProperties": {
+        "source": {
+          "type": "SqlServerSource",
+          "sqlReaderQuery": "SELECT TABLE_NAME, 'products' AS databaseName FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE'"
+        },
+        "dataset": {
+          "referenceName": "ds_sqlserver_products",
+          "type": "DatasetReference"
+        },
+        "firstRowOnly": false
+      }
+    },
+    {
+      "name": "Appendcustomerprofile",
+      "type": "ForEach",
+      "dependsOn": [{ "activity": "Lookupcustomerprofile", "dependencyConditions": ["Succeeded"] }],
+      "typeProperties": {
+        "isSequential": true,
         "items": {
-          "value": "@activity('GetTableList').output.value",
+          "value": "@activity('Lookupcustomerprofile').output.value",
           "type": "Expression"
         },
         "activities": [
           {
-            "name": "CopyTable",
-            "type": "Copy",
+            "name": "AppendRowcustomerprofile",
+            "type": "AppendVariable",
             "typeProperties": {
-              "source": {
-                "type": "SqlServerSource",
-                "sqlReaderQuery": {
-                  "value": "@concat('SELECT * FROM dbo.', item().TABLE_NAME)",
-                  "type": "Expression"
-                }
-              },
-              "sink": {
-                "type": "DelimitedTextSink",
-                "storeSettings": { "type": "AzureBlobFSWriteSettings" },
-                "formatSettings": {
-                  "type": "DelimitedTextWriteSettings",
-                  "quoteAllText": true,
-                  "fileExtension": ".csv"
-                }
-              },
-              "enableStaging": false
-            },
-            "inputs": [
-              {
-                "referenceName": "ds_sqlserver_all",
-                "type": "DatasetReference",
-                "parameters": {
-                  "tableName": { "value": "@item().TABLE_NAME", "type": "Expression" }
-                }
+              "variableName": "tableList",
+              "value": {
+                "TABLE_NAME": "@item().TABLE_NAME",
+                "databaseName": "@item().databaseName"
               }
-            ],
-            "outputs": [
-              {
-                "referenceName": "ds_adls_landing_all",
-                "type": "DatasetReference",
-                "parameters": {
-                  "tableName": { "value": "@item().TABLE_NAME", "type": "Expression" }
-                }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Appendonlinebanking",
+      "type": "ForEach",
+      "dependsOn": [{ "activity": "Lookuponlinebanking", "dependencyConditions": ["Succeeded"] }],
+      "typeProperties": {
+        "isSequential": true,
+        "items": {
+          "value": "@activity('Lookuponlinebanking').output.value",
+          "type": "Expression"
+        },
+        "activities": [
+          {
+            "name": "AppendRowonlinebanking",
+            "type": "AppendVariable",
+            "typeProperties": {
+              "variableName": "tableList",
+              "value": {
+                "TABLE_NAME": "@item().TABLE_NAME",
+                "databaseName": "@item().databaseName"
               }
-            ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Appendproducts",
+      "type": "ForEach",
+      "dependsOn": [{ "activity": "Lookupproducts", "dependencyConditions": ["Succeeded"] }],
+      "typeProperties": {
+        "isSequential": true,
+        "items": {
+          "value": "@activity('Lookupproducts').output.value",
+          "type": "Expression"
+        },
+        "activities": [
+          {
+            "name": "AppendRowproducts",
+            "type": "AppendVariable",
+            "typeProperties": {
+              "variableName": "tableList",
+              "value": {
+                "TABLE_NAME": "@item().TABLE_NAME",
+                "databaseName": "@item().databaseName"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ForEachTable",
+      "type": "ForEach",
+      "dependsOn": [
+        { "activity": "Appendcustomerprofile", "dependencyConditions": ["Succeeded"] },
+        { "activity": "Appendonlinebanking", "dependencyConditions": ["Succeeded"] },
+        { "activity": "Appendproducts", "dependencyConditions": ["Succeeded"] }
+      ],
+      "typeProperties": {
+        "isSequential": false,
+        "items": {
+          "value": "@variables('tableList')",
+          "type": "Expression"
+        },
+        "activities": [
+          {
+            "name": "BranchOnDatabase",
+            "type": "Switch",
+            "typeProperties": {
+              "on": {
+                "value": "@item().databaseName",
+                "type": "Expression"
+              },
+              "cases": [
+                {
+                  "value": "customerprofile",
+                  "activities": [
+                    {
+                      "name": "CopyFromcustomerprofile",
+                      "type": "Copy",
+                      "typeProperties": {
+                        "source": {
+                          "type": "SqlServerSource",
+                          "sqlReaderQuery": {
+                            "value": "@concat('SELECT * FROM dbo.', item().TABLE_NAME)",
+                            "type": "Expression"
+                          }
+                        },
+                        "sink": {
+                          "type": "DelimitedTextSink",
+                          "storeSettings": { "type": "AzureBlobFSWriteSettings" },
+                          "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".csv"
+                          }
+                        },
+                        "enableStaging": false
+                      },
+                      "inputs": [
+                        {
+                          "referenceName": "ds_sqlserver_customerprofile",
+                          "type": "DatasetReference"
+                        }
+                      ],
+                      "outputs": [
+                        {
+                          "referenceName": "ds_adls_landing",
+                          "type": "DatasetReference",
+                          "parameters": {
+                            "tableName": {
+                              "value": "@concat('customerprofile/', item().TABLE_NAME)",
+                              "type": "Expression"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "onlinebanking",
+                  "activities": [
+                    {
+                      "name": "CopyFromonlinebanking",
+                      "type": "Copy",
+                      "typeProperties": {
+                        "source": {
+                          "type": "SqlServerSource",
+                          "sqlReaderQuery": {
+                            "value": "@concat('SELECT * FROM dbo.', item().TABLE_NAME)",
+                            "type": "Expression"
+                          }
+                        },
+                        "sink": {
+                          "type": "DelimitedTextSink",
+                          "storeSettings": { "type": "AzureBlobFSWriteSettings" },
+                          "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".csv"
+                          }
+                        },
+                        "enableStaging": false
+                      },
+                      "inputs": [
+                        {
+                          "referenceName": "ds_sqlserver_onlinebanking",
+                          "type": "DatasetReference"
+                        }
+                      ],
+                      "outputs": [
+                        {
+                          "referenceName": "ds_adls_landing",
+                          "type": "DatasetReference",
+                          "parameters": {
+                            "tableName": {
+                              "value": "@concat('onlinebanking/', item().TABLE_NAME)",
+                              "type": "Expression"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "value": "products",
+                  "activities": [
+                    {
+                      "name": "CopyFromproducts",
+                      "type": "Copy",
+                      "typeProperties": {
+                        "source": {
+                          "type": "SqlServerSource",
+                          "sqlReaderQuery": {
+                            "value": "@concat('SELECT * FROM dbo.', item().TABLE_NAME)",
+                            "type": "Expression"
+                          }
+                        },
+                        "sink": {
+                          "type": "DelimitedTextSink",
+                          "storeSettings": { "type": "AzureBlobFSWriteSettings" },
+                          "formatSettings": {
+                            "type": "DelimitedTextWriteSettings",
+                            "quoteAllText": true,
+                            "fileExtension": ".csv"
+                          }
+                        },
+                        "enableStaging": false
+                      },
+                      "inputs": [
+                        {
+                          "referenceName": "ds_sqlserver_products",
+                          "type": "DatasetReference"
+                        }
+                      ],
+                      "outputs": [
+                        {
+                          "referenceName": "ds_adls_landing",
+                          "type": "DatasetReference",
+                          "parameters": {
+                            "tableName": {
+                              "value": "@concat('products/', item().TABLE_NAME)",
+                              "type": "Expression"
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
           }
         ]
       }

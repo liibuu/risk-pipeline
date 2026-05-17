@@ -75,18 +75,7 @@ az datafactory integration-runtime get-status `
 
 Restart-Service -Name "DIAHostService"
 
-# Step 2: Create the SQL Server Linked Services
-az datafactory linked-service create `
-  --resource-group rg-risk-pipeline `
-  --factory-name adf-risk-pipeline `
-  --linked-service-name ls_sqlserver_onprem `
-  --properties `@ls_sqlserver_onprem.json
 
-az datafactory linked-service create `
-  --resource-group rg-risk-pipeline `
-  --factory-name adf-risk-pipeline `
-  --linked-service-name ls_adls_riskpipeline `
-  --properties `@ls_adls_riskpipeline.json
 
 
 # Step 3: Create the Copy Pipeline

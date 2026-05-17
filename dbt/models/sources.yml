@@ -21,19 +21,6 @@ sources:
           - name: VERIFY_METHOD
           - name: LEGAL_ID
 
-      - name: base_deposit
-        description: "Deposit accounts - CA and TD per customer per month"
-        columns:
-          - name: ACCOUNT_ID
-            tests: [not_null]
-          - name: CUSTOMER_NUMBER
-            tests: [not_null]
-          - name: MONTH
-          - name: ACCOUNT_TYPE
-          - name: BALANCE
-          - name: OPEN_DATE
-          - name: CLOSE_DATE
-
   - name: onlinebanking
     description: "Online banking activity and transaction events"
     schema: raw_ext
@@ -60,7 +47,7 @@ sources:
           - name: TRANS_AMOUNT
           - name: TRANS_TIMESTAMP
 
-  - name: cic
+  - name: products
     description: "Credit bureau data - cards and loans"
     schema: raw_ext
     tables:
@@ -86,3 +73,16 @@ sources:
           - name: DISBURSEMENT_DATE
           - name: PAYOFF_DATE
           - name: LOAN_TYPE
+
+      - name: base_deposit
+        description: "Deposit accounts - CA and TD per customer per month"
+        columns:
+          - name: ACCOUNT_ID
+            tests: [not_null]
+          - name: CUSTOMER_NUMBER
+            tests: [not_null]
+          - name: MONTH
+          - name: ACCOUNT_TYPE
+          - name: BALANCE
+          - name: OPEN_DATE
+          - name: CLOSE_DATE          
