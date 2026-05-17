@@ -1,0 +1,10 @@
+﻿{
+  "type": "SqlServer",
+  "typeProperties": {
+    "connectionString": "integrated security=False;data source=localhost;initial catalog=<onprem-db-name>;user id=<onprem-sql-username>;password=<onprem-sql-password>"
+  },
+  "connectVia": {
+    "referenceName": "ir-selfhosted-riskpipeline",
+    "type": "IntegrationRuntimeReference"
+  }
+}

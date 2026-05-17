@@ -1,0 +1,18 @@
+﻿{
+  "type": "DelimitedText",
+  "typeProperties": {
+    "location": {
+      "type": "AzureBlobFSLocation",
+      "folderPath": "landing/customerprofile",
+      "fileSystem": "risk-data"
+    },
+    "columnDelimiter": ",",
+    "escapeChar": "\\",
+    "firstRowAsHeader": true,
+    "quoteChar": "\""
+  },
+  "linkedServiceName": {
+    "referenceName": "ls_adls_riskpipeline",
+    "type": "LinkedServiceReference"
+  }
+}

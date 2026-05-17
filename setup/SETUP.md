@@ -30,9 +30,84 @@ On-prem SQL Server → ADF → ...
 
 ---
 
+```bash
+az login
+az account show
+```
+
 ## Part 1: Data Ingestion
 
 ### 1.1 On-Premises SQL Server Setup
+```bash
+# Step 1: Install Self-hosted Integration Runtime
+# Create ADF
+az datafactory create `
+  --resource-group rg-risk-pipeline `
+  --factory-name adf-risk-pipeline `
+  --location germanywestcentral
+
+# Create the Self-hosted Integration Runtime
+az datafactory integration-runtime self-hosted create `
+  --resource-group rg-risk-pipeline `
+  --factory-name adf-risk-pipeline `
+  --integration-runtime-name ir-selfhosted-riskpipeline
+
+# Retrieve the auth keys 
+az datafactory integration-runtime list-auth-key `
+  --resource-group rg-risk-pipeline `
+  --factory-name adf-risk-pipeline `
+  --integration-runtime-name ir-selfhosted-riskpipeline  
+
+# If SHIR not installed yet
+
+# If SHIR installed already (run as admin)
+Get-Service -Name "DIAHostService" 2>$null
+
+& "C:\Program Files\Microsoft Integration Runtime\5.0\Shared\dmgcmd.exe" `
+  -RegisterNewNode "<authKey1>" "ir-selfhosted-riskpipeline"
+
+# Verify: Expected output: "Online"
+az datafactory integration-runtime get-status `
+  --resource-group rg-risk-pipeline `
+  --factory-name adf-risk-pipeline `
+  --integration-runtime-name ir-selfhosted-riskpipeline `
+  --query "properties.state"
+
+Restart-Service -Name "DIAHostService"
+
+# Step 2: Create the SQL Server Linked Services
+az datafactory linked-service create `
+  --resource-group rg-risk-pipeline `
+  --factory-name adf-risk-pipeline `
+  --linked-service-name ls_sqlserver_onprem `
+  --properties `@ls_sqlserver_onprem.json
+
+az datafactory linked-service create `
+  --resource-group rg-risk-pipeline `
+  --factory-name adf-risk-pipeline `
+  --linked-service-name ls_adls_riskpipeline `
+  --properties `@ls_adls_riskpipeline.json
+
+
+# Step 3: Create the Copy Pipeline
+
+
+
+
+
+# Trouble shooting
+$spObjectId = az ad sp list --display-name sp-dbt-riskpipeline --query "[0].id" -o tsv
+
+$storageId = az storage account show `
+  --name striskpipelinegwc612 `
+  --resource-group rg-risk-pipeline `
+  --query "id" -o tsv
+
+az role assignment create `
+  --assignee $spObjectId `
+  --role "Storage Blob Data Contributor" `
+  --scope $storageId
+```
 
 ### 1.2 Azure Resources Setup
 
@@ -97,8 +172,6 @@ az storage blob upload --account-name striskpipelinegwc612 --account-key $ACCOUN
 # cic source
 az storage blob upload --account-name striskpipelinegwc612 --account-key $ACCOUNT_KEY --container-name risk-data --name "raw/cic/base_card.parquet" --file "./raw/base_card.parquet"
 az storage blob upload --account-name striskpipelinegwc612 --account-key $ACCOUNT_KEY --container-name risk-data --name "raw/cic/base_lending.parquet" --file "./raw/base_lending.parquet"
-
-
 ```
 
 For Synapse-specific setup, refer to [Synapse setup](./synapse/)

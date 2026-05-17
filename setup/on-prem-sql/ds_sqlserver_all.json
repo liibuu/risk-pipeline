@@ -1,0 +1,18 @@
+﻿{
+  "type": "SqlServerTable",
+  "schema": [],
+  "typeProperties": {
+    "schema": "dbo",
+    "table": {
+      "value": "@dataset().tableName",
+      "type": "Expression"
+    }
+  },
+  "parameters": {
+    "tableName": { "type": "string" }
+  },
+  "linkedServiceName": {
+    "referenceName": "ls_sqlserver_onprem",
+    "type": "LinkedServiceReference"
+  }
+}

@@ -1,0 +1,12 @@
+﻿{
+  "type": "SqlServerTable",
+  "schema": [],
+  "typeProperties": {
+    "schema": "dbo",
+    "table": "customerprofile"
+  },
+  "linkedServiceName": {
+    "referenceName": "ls_sqlserver_onprem",
+    "type": "LinkedServiceReference"
+  }
+}

@@ -1,0 +1,12 @@
+﻿{
+  "type": "AzureBlobFS",
+  "typeProperties": {
+    "url": "https://striskpipelinegwc612.dfs.core.windows.net",
+    "servicePrincipalId": "<appId>",
+    "servicePrincipalKey": {
+      "type": "SecureString",
+      "value": "<client-secret>"
+    },
+    "tenant": "<tenantId>"
+  }
+}
