@@ -74,7 +74,7 @@ with_dv_keys as (
 
         {{ generate_hash_diff([
             'loan_type',
-            'branch_code',    -- add
+            'branch_code',
             'loan_amount',
             'disbursement_date',
             'payoff_date'

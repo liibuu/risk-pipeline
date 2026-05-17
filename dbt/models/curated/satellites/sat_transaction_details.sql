@@ -94,8 +94,8 @@ with_dv_keys as (
             'trans_lv2',
             'trans_amount',
             'trans_timestamp'
-            'currency',       -- added dims
-            'fin_inst_id'     -- added dims
+            'currency',
+            'fin_inst_id'
         ]) }}                                           as hash_diff,
 
         trans_lv1,

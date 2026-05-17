@@ -49,8 +49,8 @@ with_dv_keys as (
 
         {{ generate_hash_diff([
             'card_type',
-            'card_subtype',   -- add
-            'branch_code',    -- add
+            'card_subtype',
+            'branch_code',
             'issue_date',
             'status'
         ]) }}                                           as hash_diff,
