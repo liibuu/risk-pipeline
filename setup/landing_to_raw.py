@@ -45,7 +45,7 @@ def convert(blob_service: BlobServiceClient, container: str):
         df = df.apply(lambda col: col.str.strip() if col.dtype == object else col)
 
         # upload as single parquet
-        dst_path = f"{RAW_ROOT}/{raw_folder}/{raw_stem}.parquet"
+        dst_path = f"{RAW_ROOT}/{raw_folder}/{raw_stem}/{raw_stem}.parquet"
         buf = io.BytesIO()
         df.to_parquet(buf, index=False, engine="pyarrow")
         buf.seek(0)
