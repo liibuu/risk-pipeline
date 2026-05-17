@@ -18,6 +18,9 @@ base as (
         cast(TRANS_LV2       as varchar(100))       as trans_lv2,
         try_cast(TRANS_AMOUNT as decimal(18,2))     as trans_amount,
         cast(TRANS_TIMESTAMP as varchar(30))        as trans_timestamp,     -- nullable: ~0.5% nulls; parsed in satellite
+        cast(CURRENCY        as varchar(10))        as currency,            -- null for VND transactions
+        cast(FIN_INST_ID     as varchar(50))        as fin_inst_id,
+        cast(FIN_INST_NAME   as varchar(200))       as fin_inst_name,
 
         -- Data Vault metadata
         'ONLINEBANKING'                             as record_source,

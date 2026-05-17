@@ -5,7 +5,7 @@
 
 with source as (
 
-    select * from {{ source('cic', 'base_lending') }}
+    select * from {{ source('products', 'base_lending') }}
 
 ),
 
@@ -18,6 +18,8 @@ base as (
         try_cast(DISBURSEMENT_DATE as date)         as disbursement_date,   -- ~0.5% future dates caught in satellite
         try_cast(PAYOFF_DATE       as date)         as payoff_date,         -- nullable: unpaid loans have no payoff date
         cast(LOAN_TYPE       as varchar(50))        as loan_type,
+        cast(BRANCH_CODE     as varchar(20))        as branch_code,
+        cast(BRANCH_NAME     as varchar(200))       as branch_name,
 
         -- Data Vault metadata
         'CIC'                                       as record_source,

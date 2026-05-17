@@ -5,7 +5,7 @@
 
 with source as (
 
-    select * from {{ source('customerprofile', 'base_deposit') }}
+    select * from {{ source('products', 'base_deposit') }}
 
 ),
 

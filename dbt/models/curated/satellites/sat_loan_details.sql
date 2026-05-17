@@ -32,6 +32,8 @@ cleaned as (
         loan_id,
         customer_number,
         loan_type,
+        branch_code,
+        branch_name,
         payoff_date,
 
         -- nullify negative loan amounts
@@ -72,12 +74,15 @@ with_dv_keys as (
 
         {{ generate_hash_diff([
             'loan_type',
+            'branch_code',    -- add
             'loan_amount',
             'disbursement_date',
             'payoff_date'
         ]) }}                                           as hash_diff,
 
         loan_type,
+        branch_code,
+        branch_name,
         loan_amount,
         loan_amount_flag,
         disbursement_date,

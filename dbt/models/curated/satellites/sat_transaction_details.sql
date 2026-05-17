@@ -56,6 +56,11 @@ cleaned as (
             else 0
         end                 as is_timestamp_null,
 
+        -- pass-through dim columns (no cleaning needed)
+        currency,
+        fin_inst_id,
+        fin_inst_name,
+
         record_source,
         load_ts
 
@@ -89,6 +94,8 @@ with_dv_keys as (
             'trans_lv2',
             'trans_amount',
             'trans_timestamp'
+            'currency',       -- added dims
+            'fin_inst_id'     -- added dims
         ]) }}                                           as hash_diff,
 
         trans_lv1,
@@ -98,6 +105,9 @@ with_dv_keys as (
         trans_timestamp,
         is_timestamp_null,
         is_lv_mismatch,
+        currency,
+        fin_inst_id,
+        fin_inst_name,
         record_source,
         load_ts
 

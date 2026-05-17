@@ -1,9 +1,9 @@
 /*
   dim_date
-  ─────────
+  ---------
   Layer  : mart / Kimball dimension
   Grain  : one row per calendar date
-  Source : generated — no upstream dbt model needed
+  Source : generated - no upstream dbt model needed
   Range  : 2015-01-01 to 2030-12-31 (covers your transaction data range)
 */
 

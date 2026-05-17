@@ -20,6 +20,8 @@ card_sat as (
     select
         card_hk,
         card_type,
+        card_subtype,   --add
+        branch_code,    --add
         issue_date,
         status,
         load_ts,
@@ -54,6 +56,16 @@ dim_cust as (
 
 ),
 
+dim_branch as (
+    select branch_sk, branch_code
+    from {{ ref('dim_branch') }}
+),
+
+dim_card_subtype as (
+    select card_subtype_sk, card_subtype
+    from {{ ref('dim_card_subtype') }}
+),
+
 final as (
 
     select
@@ -62,6 +74,8 @@ final as (
         c.card_id,
         dc.dim_customer_sk                                              as customer_sk,
         hc.customer_number                                              as customer_id,
+        db.branch_sk                                                    as branch_sk,
+        dcs.card_subtype_sk                                             as card_subtype_sk,
 
         s.card_type,
         s.issue_date,
@@ -76,10 +90,12 @@ final as (
         datediff(day, s.issue_date, cast(getdate() as date))           as days_since_issue
 
     from card_hub c
-    inner join card_sat s   on c.card_hk      = s.card_hk and s.rn = 1
-    left join  lnk l        on c.card_hk      = l.card_hk
-    left join  hub_cust hc  on l.customer_hk  = hc.customer_hk
-    left join  dim_cust dc  on hc.customer_number = dc.customer_id
+    inner join card_sat s           on c.card_hk      = s.card_hk and s.rn = 1
+    left join  lnk l                on c.card_hk      = l.card_hk
+    left join  hub_cust hc          on l.customer_hk  = hc.customer_hk
+    left join  dim_cust dc          on hc.customer_number = dc.customer_id
+    left join dim_branch        db  on s.branch_code  = db.branch_code
+    left join dim_card_subtype  dcs on s.card_subtype = dcs.card_subtype
 
 )
 

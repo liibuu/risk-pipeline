@@ -1,6 +1,6 @@
 /*
   dim_customer
-  ─────────────
+  -------------
   Layer  : mart / Kimball dimension
   Grain  : one row per customer per version (SCD Type 2)
   Source : hub_customer + sat_customer_details

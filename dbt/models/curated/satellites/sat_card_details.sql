@@ -30,6 +30,9 @@ cleaned as (
         card_id,
         customer_number,
         card_type,
+        card_subtype,                   -- added dims, null for debit cards
+        branch_code,                    -- added dims, null for debit cards
+        branch_name,                    -- added dims, null for debit cards
         issue_date,
         upper(status)   as status,      -- ACTIVE / EXPIRED / BLOCKED
         record_source,
@@ -46,11 +49,16 @@ with_dv_keys as (
 
         {{ generate_hash_diff([
             'card_type',
+            'card_subtype',   -- add
+            'branch_code',    -- add
             'issue_date',
             'status'
         ]) }}                                           as hash_diff,
 
         card_type,
+        card_subtype,                  
+        branch_code,                   
+        branch_name,                
         issue_date,
         status,
         record_source,

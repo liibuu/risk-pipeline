@@ -2,10 +2,10 @@ version: 2
 
 models:
 
-  # ── DIMENSIONS ────────────────────────────────────────────────
+  # -- DIMENSIONS ------------------------------------------------
 
   - name: dim_customer
-    description: "SCD Type 2 customer dimension — one row per customer per version"
+    description: "SCD Type 2 customer dimension - one row per customer per version"
     columns:
       - name: dim_customer_sk
         tests: [not_null, unique]
@@ -28,7 +28,7 @@ models:
         tests: [not_null]
 
   - name: dim_account
-    description: "Deposit account dimension — one row per account per snapshot month"
+    description: "Deposit account dimension - one row per account per snapshot month"
     columns:
       - name: dim_account_sk
         tests: [not_null, unique]
@@ -53,7 +53,43 @@ models:
       - name: calendar_date
         tests: [not_null, unique]
 
-  # ── FACTS ─────────────────────────────────────────────────────
+  - name: dim_currency
+    description: "Currency codes - VND is domestic base currency"
+    columns:
+      - name: currency_sk
+        tests: [not_null, unique]
+      - name: currency_code
+        tests: [not_null, unique]
+      - name: is_domestic
+        tests:
+          - accepted_values:
+              values: [0, 1]
+
+  - name: dim_fin_inst
+    description: "Counterparty financial institutions on transactions"
+    columns:
+      - name: fin_inst_sk
+        tests: [not_null, unique]
+      - name: fin_inst_id
+        tests: [not_null, unique]
+
+  - name: dim_branch
+    description: "Bank branches - sourced from cards and loans"
+    columns:
+      - name: branch_sk
+        tests: [not_null, unique]
+      - name: branch_code
+        tests: [not_null, unique]
+
+  - name: dim_card_subtype
+    description: "Credit card subtypes - Platinum, Diamond World Lady, StepUp"
+    columns:
+      - name: card_subtype_sk
+        tests: [not_null, unique]
+      - name: card_subtype
+        tests: [not_null, unique]        
+
+  # -- FACTS -----------------------------------------------------
 
   - name: fact_transactions
     description: "Grain: one row per financial transaction"
@@ -83,6 +119,26 @@ models:
         tests:
           - accepted_values:
               values: [0, 1]
+      - name: currency_sk
+        tests:
+          - not_null:
+              config:
+                severity: warn
+          - relationships:
+              arguments:
+                to: ref('dim_currency')
+                field: currency_sk
+              config:
+                severity: warn
+      - name: fin_inst_sk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_financial_institution')
+                field: fin_inst_sk
+              config:
+                severity: warn              
+
 
   - name: fact_card_snapshot
     description: "Grain: one row per card (latest snapshot)"
@@ -107,6 +163,23 @@ models:
         tests:
           - accepted_values:
               values: [0, 1]
+      - name: branch_sk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_branch')
+                field: branch_sk
+              config:
+                severity: warn
+      - name: card_subtype_sk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_card_subtype')
+                field: card_subtype_sk
+              config:
+                severity: warn
+
 
   - name: fact_loan_snapshot
     description: "Grain: one row per loan (latest snapshot)"
@@ -123,3 +196,11 @@ models:
         tests:
           - accepted_values:
               values: [0, 1]
+      - name: branch_sk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_branch')
+                field: branch_sk
+              config:
+                severity: warn              

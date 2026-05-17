@@ -20,6 +20,7 @@ loan_sat as (
     select
         loan_hk,
         loan_type,
+        branch_code,
         loan_amount,
         loan_amount_flag,
         disbursement_date,
@@ -57,6 +58,11 @@ dim_cust as (
 
 ),
 
+dim_branch as (
+    select branch_sk, branch_code
+    from {{ ref('dim_branch') }}
+),
+
 final as (
 
     select
@@ -65,6 +71,7 @@ final as (
         l.loan_id,
         dc.dim_customer_sk                                              as customer_sk,
         hc.customer_number                                              as customer_id,
+        db.branch_sk                                                    as branch_sk,
 
         s.loan_type,
         s.loan_amount,
@@ -92,10 +99,11 @@ final as (
         end                                                             as days_outstanding
 
     from loan_hub l
-    inner join loan_sat s   on l.loan_hk      = s.loan_hk and s.rn = 1
-    left join  lnk lk       on l.loan_hk      = lk.loan_hk
-    left join  hub_cust hc  on lk.customer_hk = hc.customer_hk
-    left join  dim_cust dc  on hc.customer_number = dc.customer_id
+    inner join loan_sat s       on l.loan_hk      = s.loan_hk and s.rn = 1
+    left join  lnk lk           on l.loan_hk      = lk.loan_hk
+    left join  hub_cust hc      on lk.customer_hk = hc.customer_hk
+    left join  dim_cust dc      on hc.customer_number = dc.customer_id
+    left join dim_branch  db    on s.branch_code = db.branch_code
 
     -- exclude loans with dirty amounts
     where s.loan_amount_flag != 'NEGATIVE' or s.loan_amount_flag is null
