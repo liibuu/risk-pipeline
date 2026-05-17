@@ -134,7 +134,7 @@ models:
         tests:
           - relationships:
               arguments:
-                to: ref('dim_financial_institution')
+                to: ref('dim_fin_inst')
                 field: fin_inst_sk
               config:
                 severity: warn              

@@ -61,7 +61,7 @@ dim_currency as (
 
 dim_fin_inst as (
     select fin_inst_sk, fin_inst_id
-    from {{ ref('dim_financial_institution') }}
+    from {{ ref('dim_fin_inst') }}
 ),
 
 final as (
