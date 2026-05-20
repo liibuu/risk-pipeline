@@ -43,7 +43,6 @@ with DAG(
     landing_to_raw = BashOperator(
         task_id="landing_to_raw",
         bash_command=(
-            "source /opt/airflow/dbt-env/bin/activate && "
             "python /opt/airflow/setup/landing_to_raw.py"
         ),
     )    
