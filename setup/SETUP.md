@@ -165,6 +165,18 @@ az storage blob upload --account-name striskpipelinegwc612 --account-key $ACCOUN
 
 For Synapse-specific setup, refer to [Synapse setup](./synapse/)
 
+```bash
+az vm create `
+  --resource-group rg-risk-pipeline `
+  --name vm-riskpipeline-dev-001 `
+  --image Ubuntu2204 `
+  --size Standard_B2s `
+  --location germanywestcentral `
+  --zone 1 `
+  --admin-username azureuser `
+  --generate-ssh-keys
+```
+
 ## Naming Conventions
 
 | Prefix | Type | Example |
