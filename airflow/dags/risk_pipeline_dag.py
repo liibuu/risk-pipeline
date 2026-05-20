@@ -16,7 +16,7 @@ with DAG(
     dag_id="risk_pipeline",
     default_args=default_args,
     start_date=datetime(2026, 1, 1),
-    schedule_interval="0 6 * * *",   # daily at 06:00
+    schedule=None,   # manually
     catchup=False,
 ) as dag:
 
