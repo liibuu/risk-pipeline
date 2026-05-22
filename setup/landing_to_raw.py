@@ -3,6 +3,7 @@ import pandas as pd
 from pathlib import Path
 from azure.storage.blob import BlobServiceClient
 import io, os
+import gc
 from dotenv import load_dotenv
 load_dotenv()  # loads .env from current directory
 
@@ -53,6 +54,11 @@ def convert(blob_service: BlobServiceClient, container: str):
         out_blob = blob_service.get_blob_client(container, dst_path)
         out_blob.upload_blob(buf, overwrite=True)
         print(f"  {src_prefix}  →  {dst_path}  ({len(df):,} rows)")
+
+        # free memory to avoid OOM kill
+        del df, buf
+        gc.collect()
+
 
 if __name__ == "__main__":
     client = BlobServiceClient.from_connection_string(os.environ["AZURE_STORAGE_CONNECTION_STRING"])
