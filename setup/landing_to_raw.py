@@ -9,7 +9,7 @@ LANDING_ROOT = "landing"
 RAW_ROOT     = "raw"
 
 FILE_MAP = [
-    ("customerprofile",  "Data_customer",         "customer_profile", "base_customer"),
+    ("customerprofile",  "Data_customer",         "customerprofile",   "base_customer"),
     ("products",         "Data_deposit",           "products",         "base_deposit"),
     ("products",         "Data_card",              "products",         "base_card"),
     ("products",         "Data_lending",           "products",         "base_lending"),

@@ -27,24 +27,6 @@ models:
       - name: valid_to
         tests: [not_null]
 
-  - name: dim_account
-    description: "Deposit account dimension - one row per account per snapshot month"
-    columns:
-      - name: dim_account_sk
-        tests: [not_null, unique]
-      - name: account_id
-        tests: [not_null]
-      - name: account_type
-        tests:
-          - accepted_values:
-              values: ['CURRENT', 'TERM_DEPOSIT']
-              config:
-                severity: warn
-      - name: current_flag
-        tests:
-          - accepted_values:
-              values: [0, 1]
-
   - name: dim_date
     description: "Calendar date spine 2015-2030"
     columns:
@@ -203,4 +185,32 @@ models:
                 to: ref('dim_branch')
                 field: branch_sk
               config:
-                severity: warn              
+                severity: warn         
+
+  - name: fact_account_snapshot    
+    description: "Account snapshot - one row per account per month"
+    columns:
+      - name: fact_account_snapshot_sk      
+        tests: [not_null, unique]
+      - name: account_id
+        tests: [not_null]
+      - name: account_type
+        tests:
+          - accepted_values:
+              values: ['CURRENT', 'TERM_DEPOSIT']
+      - name: is_balance_suspect
+        tests:
+          - accepted_values:
+              values: [0, 1]  
+      - name: is_open
+        tests:
+          - accepted_values:
+              values: [0, 1]        
+      - name: customer_sk
+        tests:
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: dim_customer_sk
+              config:
+                severity: warn                       

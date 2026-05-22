@@ -1,0 +1,16 @@
+risk_pipeline:
+  target: dev
+  outputs:
+    dev:
+      type: synapse
+      driver: 'ODBC Driver 18 for SQL Server'
+      server: synapse-riskpipeline-ondemand.sql.azuresynapse.net
+      port: 1433
+      database: db_risk_pipeline
+      schema: dbt_dev
+      authentication: ActiveDirectoryServicePrincipal
+      user: "{{ env_var('DBT_USER') }}"
+      tenant_id: "{{ env_var('DBT_TENANT_ID') }}"
+      client_id: "{{ env_var('DBT_CLIENT_ID') }}"
+      client_secret: "{{ env_var('DBT_CLIENT_SECRET') }}"
+      
