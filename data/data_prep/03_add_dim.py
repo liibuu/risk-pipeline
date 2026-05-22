@@ -15,7 +15,7 @@ import numpy as np
 
 # -- Paths ----------------------------------------------------
 INPUT_DIR  = "dirtied"   # folder containing dirtied CSVs
-OUTPUT_DIR = "landing"   # write back to same folder (overwrites), or change
+OUTPUT_DIR = "ready"   # write back to same folder (overwrites), or change
 LIST_DIR   = "input"    # folder containing list_bank.csv, list_branch.csv
 
 TXN_FILE     = "Data_MyVIB_Transaction.csv"
