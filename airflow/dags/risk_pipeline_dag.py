@@ -45,6 +45,7 @@ with DAG(
         bash_command=(
             "python /opt/airflow/setup/landing_to_raw.py"
         ),
+        execution_timeout=timedelta(minutes=30),
     )    
 
     clean_adls = BashOperator(
