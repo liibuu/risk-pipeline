@@ -39,8 +39,8 @@ def convert(blob_service: BlobServiceClient, container: str):
 
         for blob_path in blobs:
             blob      = blob_service.get_blob_client(container, blob_path)
-            raw_bytes = blob.download_blob().readall()
-            chunk     = pd.read_csv(io.BytesIO(raw_bytes), dtype=str, low_memory=False)
+            stream    = blob.download_blob()
+            chunk     = pd.read_csv(stream, dtype=str, low_memory=False)
             chunk     = chunk.apply(lambda col: col.str.strip() if col.dtype == object else col)
             table     = pa.Table.from_pandas(chunk)
             total    += len(chunk)
@@ -49,7 +49,7 @@ def convert(blob_service: BlobServiceClient, container: str):
                 writer = pq.ParquetWriter(buf, table.schema)
             writer.write_table(table)
 
-            del chunk, raw_bytes, table
+            del chunk, stream, table
             gc.collect()
 
         if writer:
