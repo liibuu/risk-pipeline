@@ -12,7 +12,7 @@ These scripts reverse-engineer plausible row-level records from the aggregates, 
  
 ```
 source/ (VIB data imported to MS SQL)
-  ↓ 01_explode.sql       set-based explosion → export SELECT results as CSV
+  ↓ 01_explode.sql       set-based de-aggregation → export SELECT results as CSV
 exploded/                row-level, clean
   ↓ 02_inject_dirty.py   probabilistic dirty injection
   ↓ 03_add_dim.py        append dimensional columns
@@ -25,7 +25,7 @@ ready/                 row-level, dirty, enriched  →  import to MS SQL
 
 ## Scripts
  
-### `01_explode.sql` - Aggregate → Row-level
+### `01_explode.sql` - Aggregated → Row-level
  
 Source data is monthly-aggregated (e.g. `COUNT_OF_LOAN = 2`). Explosion uses a tally table join to generate one row per unit (entirely set-based).
  
