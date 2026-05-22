@@ -61,7 +61,7 @@ with DAG(
         bash_command=(
             "cd /opt/airflow/dbt && "
             ". /opt/airflow/dbt/set_env.sh && "
-            "dbt run --select raw"
+            "/home/airflow/.local/bin/dbt run --select raw"
         ),
     )
 
@@ -71,7 +71,7 @@ with DAG(
         bash_command=(
             "cd /opt/airflow/dbt && "
             ". /opt/airflow/dbt/set_env.sh && "
-            "dbt run --select curated --full-refresh"
+            "/home/airflow/.local/bin/dbt run --select curated --full-refresh"
         ),
     )
 
@@ -81,7 +81,7 @@ with DAG(
         bash_command=(
             "cd /opt/airflow/dbt && "
             ". /opt/airflow/dbt/set_env.sh && "
-            "dbt run --select mart --full-refresh"
+            "/home/airflow/.local/bin/dbt run --select mart --full-refresh"
         ),
     )
 
@@ -91,7 +91,7 @@ with DAG(
         bash_command=(
             "cd /opt/airflow/dbt && "
             ". /opt/airflow/dbt/set_env.sh && "
-            "dbt test"
+            "/home/airflow/.local/bin/dbt test"
         ),
     )
 
