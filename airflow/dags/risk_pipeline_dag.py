@@ -51,7 +51,6 @@ with DAG(
     clean_adls = BashOperator(
         task_id="clean_curated_mart",
         bash_command=(
-            "source /opt/airflow/dbt-env/bin/activate && "
             "python /opt/airflow/setup/clean_adls.py"
         ),
     )
@@ -61,7 +60,6 @@ with DAG(
         task_id="dbt_run_raw",
         bash_command=(
             "cd /opt/airflow/dbt && "
-            "source /opt/airflow/dbt-env/bin/activate && "
             ". /opt/airflow/dbt/set_env.sh && "
             "dbt run --select raw"
         ),
@@ -72,7 +70,6 @@ with DAG(
         task_id="dbt_run_curated",
         bash_command=(
             "cd /opt/airflow/dbt && "
-            "source /opt/airflow/dbt-env/bin/activate && "
             ". /opt/airflow/dbt/set_env.sh && "
             "dbt run --select curated --full-refresh"
         ),
@@ -83,7 +80,6 @@ with DAG(
         task_id="dbt_run_mart",
         bash_command=(
             "cd /opt/airflow/dbt && "
-            "source /opt/airflow/dbt-env/bin/activate && "
             ". /opt/airflow/dbt/set_env.sh && "
             "dbt run --select mart --full-refresh"
         ),
@@ -94,7 +90,6 @@ with DAG(
         task_id="dbt_test",
         bash_command=(
             "cd /opt/airflow/dbt && "
-            "source /opt/airflow/dbt-env/bin/activate && "
             ". /opt/airflow/dbt/set_env.sh && "
             "dbt test"
         ),
