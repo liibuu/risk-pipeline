@@ -31,7 +31,7 @@ landing/  →  raw/  →  curated/  →  mart/
 
 ### Use cases
 - **Model monitoring dashboard**: reports and dashboards via Power BI connected to the mart layer.
-- **Model development**: reports and ML model development, also consuming from mart and storing models in ADLS + MLflow.
+- **Model development**: reports and ML model development, also consuming from mart and storing models in ADLS + MLflow. (tbd, based on [ml-pipeline-airflow](https://github.com/liibuu/ml-pipeline-airflow))
 
 ![Implementation View](docs/implementation_view.png)
 
