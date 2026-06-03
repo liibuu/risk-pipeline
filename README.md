@@ -1,5 +1,5 @@
-# Banking Risk Data Pipeline
-A project that simulates a data pipeline for a bank's risk department. It is built on the Azure ecosystem, from raw source ingestion through transformation, orchestration, and ML model management using real architectural patterns from the financial services industry.
+# Banking Data Pipeline
+A project that simulates a data pipeline for a bank's department. It is built on the Azure ecosystem, from raw source ingestion through transformation, orchestration, and ML model management using real architectural patterns from the financial services industry.
 The pipeline follows a Vietnamese banking context (VIB Bank), handling three source systems and delivering data to two use cases (risk modelling and risk dashboard).
 
 ![Business View](docs/business_view.png)
